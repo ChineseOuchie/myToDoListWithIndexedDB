@@ -47,6 +47,10 @@ function isAnyListActivated() {
 	});
 }
 
+function deleteListById(id) {
+	return db.list.delete(id);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 	const lists = document.getElementById('lists');
 	const listName = document.getElementById('listName');
@@ -54,11 +58,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	function loadData() {
 		getLists().then((result) => {
+			lists.innerHTML = ``;
 			result.forEach(element => {
 				lists.innerHTML += `
 				<div class="item" data-list-id="${element.id}">
 					<div >${element.name}</div>
-					<button data-delete-id="${element.id}">Delete</button>
+					<button class="remove" data-delete-id="${element.id}">Delete</button>
 				</div>
 				`;
 			});
@@ -67,15 +72,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			listItems.forEach(element => {
 				element.addEventListener('click', () => {
+					// Remove active class from all lists.
 					listItems.forEach(element => {
 						element.classList.remove('active');
 					});
 					const listId = parseInt(element.dataset.listId);
 
+					// Check for active list.
 					isAnyListActivated().then((count) => {
 						if (count) {
+							// Remove all active list.
 							return removeAllActiveList().then((removed) => {
 								if (removed) {
+									// Set clicked list as active.
 									return setActiveList(listId).then((activated) => {
 										if (activated) {
 											element.classList.add('active');
@@ -89,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 								}
 							});
 						} else {
+							// Set clicked list as active if no active list has been found.
 							return setActiveList(listId).then((activated) => {
 								if (activated) {
 									element.classList.add('active');
@@ -98,11 +108,22 @@ document.addEventListener('DOMContentLoaded', () => {
 								}
 							});
 						}
-					}).then((result) => {
-						console.log(result);
 					});
 				});
 			});
+
+			const listDelete = document.querySelectorAll('.remove');
+
+			listDelete.forEach(element => {
+				element.addEventListener('click', () => {
+					const listId = parseInt(element.dataset.deleteId);
+
+					deleteListById(listId).then(() => {
+						loadData();
+					});
+				});
+			});
+
 		});
 
 		getActiveList().then((result) => {
@@ -125,13 +146,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	listSubmit.addEventListener('click', () => {
 		const listNameValue = listName.value;
-
 		addList({name: listNameValue}).then(() => {
+		loadData();
 
 		}).catch((error) => {
 			console.log(error);
 		});
 	});
+
 });
 
 
