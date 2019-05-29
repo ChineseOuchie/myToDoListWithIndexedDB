@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+	<script src="main.js"></script>
+	<style>
+		.item {
+			display: flex;
+		}
+		.item div {
+			padding: 10px;
+		}
+	</style>
+</head>
+<body>
+	<div class="list">
+			<input type="text" id="listName" placeholder="listName">
+			<button id="submitList">Submit</button>
+	</div>
+
+
+	<div class="task">
+			<input type="text" id="taskName" placeholder="taskName">
+			<button id="submitTask">Submit</button>
+	</div>
+
+	<div id="message"></div>
+
+	<div id="lists"></div>
+</body>
+</html>
