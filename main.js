@@ -25,13 +25,25 @@ function getActiveList() {
 
 function setActiveList(id) {
 	return db.list.update(id, {active: 1}).then((updated) => {
-		console.log(updated)
 		if (updated) {
 			return true;
 		}
 		else {
 			return false;
 		}
+	});
+}
+
+function removeAllActiveList() {
+	return db.list.where('active').equals(1).modify(function(value) {
+		value.active = 0;
+	});
+	
+}
+
+function isAnyListActivated() {
+	return db.list.where('active').equals(1).count((count) => {
+		return count;
 	});
 }
 
@@ -55,9 +67,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			listItems.forEach(element => {
 				element.addEventListener('click', () => {
+					listItems.forEach(element => {
+						element.classList.remove('active');
+					});
 					const listId = parseInt(element.dataset.listId);
 
-					setActiveList(listId).then((result) => {
+					isAnyListActivated().then((count) => {
+						if (count) {
+							return removeAllActiveList().then((removed) => {
+								if (removed) {
+									return setActiveList(listId).then((activated) => {
+										if (activated) {
+											element.classList.add('active');
+											return true;
+										} else {
+											return false;
+										}
+									});
+								} else {
+									return false;
+								}
+							});
+						} else {
+							return setActiveList(listId).then((activated) => {
+								if (activated) {
+									element.classList.add('active');
+									return true;
+								} else {
+									return false;
+								}
+							});
+						}
+					}).then((result) => {
 						console.log(result);
 					});
 				});
@@ -65,15 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 
 		getActiveList().then((result) => {
-			const listItems = document.querySelectorAll('.item');
-
-			listItems.forEach(element => {
-				if (parseInt(element.dataset.listId) === result.id) {
-					element.classList.add('active');
-				} else {
-					element.classList.remove('active');
-				}
-			});
+			if (result) {
+				const listItems = document.querySelectorAll('.item');
+	
+				listItems.forEach(element => {
+					if (parseInt(element.dataset.listId) === result.id) {
+						element.classList.add('active');
+						
+					} else {
+						element.classList.remove('active');
+					}
+				});
+			}
 		});
 	}
 
