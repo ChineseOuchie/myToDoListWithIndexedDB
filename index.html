@@ -14,18 +14,30 @@
 		.item div {
 			padding: 10px;
 		}
+
+		.rename-parent {
+			display: none;
+		}
+
+		.rename-active {
+			display: block;
+		}
 	</style>
 </head>
 <body>
 	<div class="list">
-			<input type="text" id="listName" placeholder="listName">
-			<button id="submitList">Submit</button>
+		<input type="text" id="listName" placeholder="listName">
+		<button id="submitList">Submit</button>
 	</div>
 
-
 	<div class="task">
-			<input type="text" id="taskName" placeholder="taskName">
-			<button id="submitTask">Submit</button>
+		<input type="text" id="taskName" placeholder="taskName">
+		<button id="submitTask">Submit</button>
+	</div>
+
+	<div id="rename-parent" class="rename-parent">
+		<input type="text" name="renameList" id="rename-list">
+		<button id="rename-list-button">Rename Submit</button>
 	</div>
 
 	<div id="message"></div>

@@ -51,6 +51,12 @@ function deleteListById(id) {
 	return db.list.delete(id);
 }
 
+function renameListById(id, newName) {
+	return db.list.where('id').equals(id).modify((value) => {
+		value.name = newName;
+	});
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 	const lists = document.getElementById('lists');
 	const listName = document.getElementById('listName');
@@ -63,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				lists.innerHTML += `
 				<div class="item" data-list-id="${element.id}">
 					<div >${element.name}</div>
+					<button class="rename" data-rename-id="${element.id}">Rename</button>
 					<button class="remove" data-delete-id="${element.id}">Delete</button>
 				</div>
 				`;
@@ -124,6 +131,29 @@ document.addEventListener('DOMContentLoaded', () => {
 				});
 			});
 
+			const renameList = document.querySelectorAll('.rename');
+			const renameListInput = document.getElementById('rename-list');
+			const renameListButton = document.getElementById('rename-list-button');
+			const renameParent = document.getElementById('rename-parent');
+
+			renameList.forEach(element => {
+				element.addEventListener('click', () => {
+					renameParent.classList.add('rename-active');
+					renameListInput.value = '';
+					
+					renameListButton.addEventListener('click', function doRename() {
+						const renameId = parseInt(element.dataset.renameId);
+
+						renameListById(renameId, renameListInput.value).then(() => {
+							renameParent.classList.remove('rename-active');
+							renameListInput.value = '';
+							renameListButton.removeEventListener('click', doRename);
+
+							loadData();
+						});
+					});
+				});
+			});
 		});
 
 		getActiveList().then((result) => {
@@ -155,114 +185,3 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function addPeople(data = {name, age, dead}) {
-// 	return db.people.add(
-// 		{
-// 			name: data.name,
-// 			age: data.age,
-// 			dead: data.dead,
-// 		}
-// 	);
-// }
-
-// function getPeoples() {
-// 	return db.people.toArray();
-// }
-
-
-// document.addEventListener('DOMContentLoaded', () => {
-// 	const lists = document.getElementById('lists');
-
-// 	const name = document.getElementById('name');
-// 	const age = document.getElementById('age');
-// 	const dead = document.getElementById('dead');
-// 	const submit = document.getElementById('submit');
-// 	const message = document.getElementById('message');
-
-
-// 	function loadData() {
-// 		getPeoples().then((item) => {
-// 			lists.innerHTML = '';
-// 			item.forEach(result => {
-// 				lists.innerHTML += `
-// 					<div class="item">
-// 						<div>${result.id}</div>
-// 						<div>${result.name}</div>
-// 						<div>${result.age}</div>
-// 						<div>${result.dead}</div>
-// 						<div class="delete" data-delete-id="${result.id}">Delete</div>
-// 					</div>
-// 				`;
-// 			});
-
-// 			const deleteButton = document.querySelectorAll('.delete');
-
-// 			deleteButton.forEach(element => {
-// 				element.addEventListener('click', () => {
-// 					db.people.where('id').equals(parseInt(element.dataset.deleteId)).delete();
-// 					loadData();
-// 				});
-// 			});
-// 		});
-// 	}
-
-// 	submit.addEventListener('click', () => {
-// 		addPeople({
-// 			name: name.value,
-// 			age: age.value,
-// 			dead: dead.value,
-// 		}).then((result) => {
-// 			if (result) {
-// 				message.innerHTML = 'Added';
-
-// 				loadData();
-// 			}
-// 		}).catch((error) => {
-// 			message.innerHTML = 'Error: ' + error;
-// 		}) ;
-// 	});
-
-// 	loadData();
-
-// });
